@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"github.com/gin-gonic/gin" //http模块哦
 	"github.com/sirupsen/logrus" //日子记录模块
 	"github.com/tiagorlampert/CHAOS/infrastructure/database"
@@ -37,19 +38,21 @@ func init() {
 }
 
 func main() {
+	os.Setenv("PORT", "8080") // 设置默认端口使用8080
+	os.Setenv("SQLITE_DATABASE", "chaos") // 默认表数据库为chaos 
 	logger := logrus.New()
 	logger.Info(`Loading environment variables`)
 
-	if err := Setup(); err != nil {
+	if err := Setup(); err != nil {//创建 tmp/database目录
 		logger.WithField(`cause`, err.Error()).Fatal(`error running setup`)
 	}
 
-	configuration, err := environment.Load()
+	configuration, err := environment.Load() // 读取server的端口数据
 	if err != nil {
 		logger.WithField(`cause`, err.Error()).Fatal(`error loading environment variables`)
 	}
 
-	db, err := database.NewProvider(configuration.Database)
+	db, err := database.NewProvider(configuration.Database) //根据输入的数据库名创建数据库，使用go内置的sqlite数据库系统，不依赖第三方
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error connecting with database`)
 	}
@@ -76,11 +79,13 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	clientService := client.NewClientService(Version, configuration, authRepository, authService)
 	urlService := url.NewUrlService(clientService)
 
+	// 上面主要是初始化程序运行中需要的数据
+	
 	setup, err := authService.Setup()
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error preparing auth`)
 	}
-	jwtMiddleware, err := middleware.NewJWTMiddleware(setup.SecretKey, userService)
+	jwtMiddleware, err := middleware.NewJWTMiddleware(setup.SecretKey, userService) // 配置JWT 登录认证流程
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
 	}

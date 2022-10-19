@@ -2,7 +2,7 @@ package environment
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/kelseyhightower/envconfig"
+	"github.com/kelseyhightower/envconfig" //用于管理来自环境变量的配置数据的 Golang 库
 )
 
 type Configuration struct {
@@ -27,7 +27,7 @@ func Load() (*Configuration, error) {
 }
 
 func readEnv(cfg interface{}) error {
-	return envconfig.Process("", cfg)
+	return envconfig.Process("", cfg) // 通过系统环境变量数据读取配置
 }
 
 func (c Configuration) Validate() error {
