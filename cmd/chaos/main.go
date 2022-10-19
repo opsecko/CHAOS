@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	"github.com/gin-gonic/gin" //http模块哦
+	"github.com/sirupsen/logrus" //日子记录模块
 	"github.com/tiagorlampert/CHAOS/infrastructure/database"
 	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
@@ -113,7 +113,7 @@ func Setup() error {
 	return system.CreateDirs(internal.TempDirectory, internal.DatabaseDirectory)
 }
 
-func (a *App) Run() error {
+func (a *App) Run() error { //等于App的一个方法，可以直接通过a.Run调用
 	ui.ShowMenu(Version, a.Configuration.Server.Port)
 
 	a.Logger.WithFields(logrus.Fields{`version`: Version, `port`: a.Configuration.Server.Port}).Info(`Starting `, AppName)
